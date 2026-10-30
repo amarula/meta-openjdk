@@ -17,7 +17,7 @@ LIC_FILES_CHKSUM = "\
 inherit jar maven maven_update_deps
 
 SRC_URI = "git://github.com/xerial/sqlite-jdbc;protocol=https;branch=master;tag=${PV};"
-SRCREV = "cab7981c19ce04d691f0675f0b2586afc2bbf803"
+SRCREV = "2b39e1f8b315fbe11cdd7271ee929ae8f9638e07"
 require ${BPN}-deps.inc
 
 do_install() {

@@ -2,7 +2,8 @@ SUMMARY = "OpenJDK"
 DESCRIPTION = "OpenJDK is a free and open-source implementation of the Java Platform."
 HOMEPAGE = "https://openjdk.org"
 BUGTRACKER = "https://github.com/adoptium/adoptium-support/issues"
-CVE_PRODUCT = "eclise:temurin"
+CVE_PRODUCT = "oracle"
+CVE_VERSION = "${@d.getVar('PV').split('+')[0]}"
 SECTION = "base"
 
 LICENSE = "GPL-2.0-or-later"
@@ -65,8 +66,9 @@ DEPENDS:append = " \
 
 DEPENDS:append = " ${@bb.utils.contains('JVM_VARIANT', 'zero', 'libffi', '', d)}"
 
+SRC_BRANCH ?= "master"
 PV_MAJOR = "${@d.getVar('PV').split('.')[0]}"
-SRC_URI = "git://github.com/openjdk/jdk${PV_MAJOR}u;protocol=https;branch=master;tag=jdk-${PV}"
+SRC_URI = "git://github.com/openjdk/jdk${PV_MAJOR}u;protocol=https;branch=${SRC_BRANCH};tag=jdk-${PV}"
 
 PACKAGECONFIG[x11] = "--disable-headless-only, --enable-headless-only, libxrandr libxrender libxt libxtst"
 
