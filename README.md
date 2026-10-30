@@ -1,7 +1,7 @@
 OpenEmbedded/Yocto Project layer for Java support
 =================================================
 
-This layer provides support for OpenJDK 17, 21, 25, and 26 for use with the OpenEmbedded build systems.
+This layer provides support for OpenJDK 17, 21, 25, and 27 for use with the OpenEmbedded build systems.
 
 Dependencies
 ============
@@ -42,7 +42,7 @@ BBLAYERS ?= " \
 
 Configuration instructions
 =======
-meta-openjdk supports OpenJDK 17, 21, 25, and 26. By default, the highest version of OpenJDK is built.
+meta-openjdk supports OpenJDK 17, 21, 25, and 27. By default, the highest version of OpenJDK is built.
 To build a different version, add `PREFERRED_VERSION_openjdk = "$PV%" where "$PV" is a supported
 version found in recipes-java/openjdk.
 
