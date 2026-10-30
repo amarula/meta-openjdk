@@ -3,7 +3,7 @@ def get_openjdk_build_version(d):
     return pv.split("+")[1]
 
 def get_openjdk_version(d):
-    supported_versions = ["26", "25", "21", "17"]
+    supported_versions = ["27", "25", "21", "17"]
     preferred_version = d.getVar("PREFERRED_VERSION_openjdk")
 
     if preferred_version is None:

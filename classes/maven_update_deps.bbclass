@@ -2,6 +2,8 @@ python do_maven_update_deps() {
     import hashlib
     import os
     import re
+    import shlex
+    import shutil
     import subprocess
     import uuid
     import bb.msg
@@ -15,40 +17,59 @@ python do_maven_update_deps() {
     temp_m2 = os.path.join(d.getVar("WORKDIR"), "temp-m2-repo")
     inc_filename = os.path.join(d.getVar("THISDIR"), f"{d.getVar('BPN')}-deps.inc")
 
+    # Files left over from a previous run are not re-downloaded, so they would
+    # be missing from the mvn output and silently dropped from the inc file.
+    shutil.rmtree(temp_m2, ignore_errors=True)
+
     os.environ["JAVA_HOME"] = f"{staging_dir_native}/{libdir}/jvm"
     os.environ["M2_HOME"] = f"{staging_dir_native}/{libdir}/maven"
     os.environ["MAVEN_HOME"] = f"{staging_dir_native}/{libdir}/maven"
     os.environ["MAVEN_REPO_DIR"] = f"{d.getVar('DL_DIR')}/maven-repo"
-    cmd = [
-        f"{staging_dir_native}/usr/lib/maven/bin/mvn",
-        "org.apache.maven.plugins:maven-dependency-plugin:3.11.0:go-offline",
+    mvn = f"{staging_dir_native}/usr/lib/maven/bin/mvn"
+    common_args = [
+        "--batch-mode",
         f"-Dmaven.repo.local={temp_m2}",
         "-f",
         d.getVar("S"),
     ]
     if log_level <= 10:
-        cmd.append("-X")
+        common_args.append("-X")
 
-    bb.note(f"Running Maven dependency resolution: {' '.join(cmd)}")
+    def run_mvn(goals):
+        cmd = [mvn] + goals + common_args
+        bb.note(f"Running Maven dependency resolution: {' '.join(cmd)}")
 
-    process = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
-    )
+        process = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
+        )
 
-    for line in process.stdout:
-        bb.debug(1, line)
-        if 'Downloaded from' in line:
-            url = re.findall(r"(?P<url>https?://\S+)", line)[0]
-            tmp_buf[str(uuid.uuid4())] = {
-                "file": url.rsplit("/", 1)[-1],
-                "url": url,
-            }
-    process.communicate()
+        for line in process.stdout:
+            bb.debug(1, line)
+            if 'Downloaded from' in line:
+                url = re.findall(r"(?P<url>https?://\S+)", line)[0]
+                tmp_buf[str(uuid.uuid4())] = {
+                    "file": url.rsplit("/", 1)[-1],
+                    "url": url,
+                }
+        process.communicate()
+        if process.returncode != 0:
+            bb.fatal(f"Maven failed ({process.returncode}): {' '.join(cmd)}")
+
+    # go-offline uses its own resolution, which ignores <exclusions> and can
+    # therefore pick different versions than a real build.
+    # Running the same goals as do_compile afterwards fetches whatever is missing.
+    run_mvn(["org.apache.maven.plugins:maven-dependency-plugin:3.11.0:go-offline"])
+    run_mvn(shlex.split(d.getVar("MAVEN_BUILD_FLAGS") or "clean package -DskipTests"))
+    run_mvn(["clean"])
 
     src_uris = []
     checksums = []
 
-    for root, _, files in os.walk(temp_m2):
+    for root, dirs, files in os.walk(temp_m2):
+        # Maven Resolver stores repository filter metadata such as
+        # prefixes-central.txt here. It is not a build dependency.
+        if root == temp_m2 and ".meta" in dirs:
+            dirs.remove(".meta")
         for file in files:
             # Maven creates several local files that don't need to be checked.
             if file.endswith(
@@ -75,7 +96,7 @@ python do_maven_update_deps() {
             file_found = False
             file_url = "UNKNOWN"
             for val in tmp_buf.values():
-                if rel_path in val["url"]:
+                if val["url"].endswith("/" + rel_path):
                     file_url = val["url"]
                     file_found = True
                     break

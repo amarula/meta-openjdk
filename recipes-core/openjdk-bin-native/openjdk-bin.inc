@@ -26,9 +26,6 @@ SRC_URI = "https://github.com/adoptium/temurin${PV_MAJOR}-binaries/releases/down
 
 S = "${WORKDIR}"
 
-# unpack200 has an invalid RPATH and relies on libzlib.
-# Because unpack200 is a deprecated tool, removing it
-# to fix this issue is safe.
 do_install() {
     install -d ${D}${libdir}/jvm
     rsync -acIr --no-perms --no-owner --no-group \
