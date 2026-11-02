@@ -8,7 +8,7 @@ CVE_PRODUCT = "sqlite-jdbc"
 
 SECTION = "support"
 
-LICENSE = "Apache-2.0 AND BSD-2-Clause"
+LICENSE = "Apache-2.0 & BSD-2-Clause"
 LIC_FILES_CHKSUM = "\
     file://LICENSE;md5=d273d63619c9aeaf15cdaf76422c4f87 \
     file://LICENSE.zentus;md5=d393760bd738a58c439f0a8eb5305d1b \
