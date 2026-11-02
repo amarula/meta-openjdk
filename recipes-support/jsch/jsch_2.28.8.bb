@@ -9,7 +9,7 @@ CVE_PRODUCT = "jsch"
 
 SECTION = "support"
 
-LICENSE = "MIT AND BSD-2-Clause"
+LICENSE = "MIT & BSD-2-Clause"
 LIC_FILES_CHKSUM = "\
     file://LICENSE.txt;md5=1574d148eee71dc1c78bb3ce6826b309 \
     file://LICENSE.jBCrypt.txt;md5=8ac9e65ef0e09deedd05f8e131b5b2e5 \
