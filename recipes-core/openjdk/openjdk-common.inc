@@ -127,7 +127,8 @@ do_install() {
 
     cd ${D}${bindir}/
     ln -snf ../../${OPENJDK_INSTALL_BASE}/bin/* .
-    rm -rf ${D}${OPENJDK_INSTALL_BASE}/{demo,jmods,include}
+    rm -rf ${D}${OPENJDK_INSTALL_BASE}/demo
+    rm -rf ${D}${OPENJDK_INSTALL_BASE}/jmods
 }
 
 sysroot_stage_all:append() {
@@ -140,8 +141,20 @@ sysroot_stage_all:append() {
 
 # Packaging setup
 FILES:${PN} += "\
-    ${libdir}/jvm \
     ${bindir}/* \
+    ${OPENJDK_INSTALL_BASE}/bin \
+    ${OPENJDK_INSTALL_BASE}/lib \
+    ${OPENJDK_INSTALL_BASE}/conf \
+    ${OPENJDK_INSTALL_BASE}/legal \
+    ${OPENJDK_INSTALL_BASE}/release \
 "
 
+FILES:${PN}-dev += "\
+    ${OPENJDK_INSTALL_BASE}/include \
+"
+
+# When 'openjdk-dev' is installed, also install 'openjdk'
+RDEPENDS:${PN}-dev += "${PN}"
+
 BBCLASSEXTEND = "native nativesdk"
+
