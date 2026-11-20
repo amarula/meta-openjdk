@@ -1,0 +1,74 @@
+{
+    "description": "meta-openjdk with OpenEmbedded 'nodistro', release 'blacksail'",
+    "expires": "2027-05-31",
+    "sources": {
+        "bitbake": {
+            "git-remote": {
+                "uri": "https://git.openembedded.org/bitbake",
+                "branch": "2.20",
+                "rev": "2.20"
+            }
+        },
+        "openembedded-core": {
+            "git-remote": {
+                "uri": "https://git.openembedded.org/openembedded-core",
+                "branch": "blacksail",
+                "rev": "blacksail"
+            }
+        },
+        "meta-openembedded": {
+            "git-remote": {
+                "uri": "https://git.openembedded.org/meta-openembedded",
+                "branch": "blacksail",
+                "rev": "blacksail"
+            }
+        },
+        "meta-openjdk": {
+            "git-remote": {
+                "uri": "https://github.com/amarula/meta-openjdk.git",
+                "branch": "master",
+                "rev": "master"
+            }
+        }
+    },
+    "bitbake-setup": {
+        "configurations": [
+        {
+            "name": "openjdk",
+            "description": "OpenJDK on OpenEmbedded 'nodistro'",
+            "setup-dir-name": "meta-openjdk-blacksail",
+            "bb-layers": [
+                "openembedded-core/meta",
+                "meta-openembedded/meta-oe",
+                "meta-openjdk"
+            ],
+            "oe-fragments-one-of": {
+                "variant": {
+                    "description": "OpenJDK variant",
+                    "options": [
+                        { "name": "meta-openjdk/jdk", "description": "Full JDK, including javac (bitbake openjdk-test-image)" },
+                        { "name": "meta-openjdk/jre", "description": "JRE only (bitbake openjre-test-image)" }
+                    ]
+                },
+                "version": {
+                    "description": "OpenJDK version",
+                    "options": [
+                        { "name": "meta-openjdk/openjdk-27", "description": "OpenJDK 27" },
+                        { "name": "meta-openjdk/openjdk-25", "description": "OpenJDK 25" },
+                        { "name": "meta-openjdk/openjdk-21", "description": "OpenJDK 21" },
+                        { "name": "meta-openjdk/openjdk-17", "description": "OpenJDK 17" }
+                    ]
+                },
+                "machine": {
+                    "description": "Target machines",
+                    "options": [
+                        { "name": "machine/qemux86-64", "description": "x86-64 system on QEMU" },
+                        { "name": "machine/qemuarm64", "description": "ARMv8 system on QEMU" }
+                    ]
+                }
+            }
+        }
+        ]
+    },
+    "version": "1.0"
+}
