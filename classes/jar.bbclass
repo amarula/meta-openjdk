@@ -53,5 +53,3 @@ oe_jarinstall() {
   done
 }
 oe_jarinstall[doc] = "Install a jar file and create all the given symlinks to it."
-
-addtask do_check_openjdk_version before do_fetch

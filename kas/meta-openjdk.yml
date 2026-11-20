@@ -13,18 +13,18 @@ repos:
 
   bitbake:
     url: "https://git.openembedded.org/bitbake"
-    branch: "2.20"
+    branch: "2.18"
     layers:
       .: disabled
 
   openembedded-core:
     url: "https://git.openembedded.org/openembedded-core"
-    branch: blacksail
+    branch: wrynose
     layers:
       meta:
 
   meta-openembedded:
     url: "https://git.openembedded.org/meta-openembedded"
-    branch: blacksail
+    branch: wrynose
     layers:
       meta-oe:
