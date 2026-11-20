@@ -16,11 +16,14 @@ LIC_FILES_CHKSUM = "\
     file://LICENSE.JZlib.txt;md5=5726f2e9799112bcdb199b9c7233b454 \
 "
 
-inherit jar maven maven_update_deps
+inherit jar maven maven_update_deps maven_ptest
 
 SRC_URI = "git://github.com/mwiede/jsch;protocol=https;branch=master;tag=${BPN}-${PV};"
 SRCREV = "36c4d26a58ee06b100a9f0f3509320168be4c43a"
 require ${BPN}-deps.inc
+
+# The maven-enforcer-plugin rule in pom.xml requires JDK 25 or newer.
+OPENJDK_MIN_VERSION = "25"
 
 do_install() {
      oe_jarinstall ${S}/target/${BPN}-${PV}.jar ${BPN}.jar
@@ -28,6 +31,6 @@ do_install() {
 
 FILES:${PN} += "${datadir}/java/${BPN}*.jar"
 
-RDEPENDS:${PN} = "openjdk sqlite3"
+RDEPENDS:${PN} = "openjdk"
 
 BBCLASSEXTEND = "native nativesdk"

@@ -1,0 +1,8 @@
+# Select OpenJDK 21. Combine with jdk.yml or jre.yml, e.g.
+#   kas build kas/jdk.yml:kas/openjdk-21.yml
+header:
+  version: 23
+
+local_conf_header:
+  openjdk-version: |
+    PREFERRED_VERSION_openjdk = "21%"

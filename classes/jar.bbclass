@@ -6,6 +6,7 @@ inherit openjdk
 # the Debian distribution.
 
 datadir_java ?= "${datadir}/java"
+libdir_jvm ?= "${libdir}/jvm"
 
 oe_jarinstall() {
   # Purpose: Install a jar file and create all the given symlinks to it.
@@ -52,3 +53,5 @@ oe_jarinstall() {
   done
 }
 oe_jarinstall[doc] = "Install a jar file and create all the given symlinks to it."
+
+addtask do_check_openjdk_version before do_fetch

@@ -1,0 +1,30 @@
+# Base configuration: meta-openjdk and its dependencies for qemux86-64.
+# Not meant to be built on its own, see jdk.yml and jre.yml.
+header:
+  version: 23
+
+machine: qemux86-64
+distro: nodistro
+
+repos:
+  meta-openjdk:
+    layers:
+      .:
+
+  bitbake:
+    url: "https://git.openembedded.org/bitbake"
+    branch: "2.20"
+    layers:
+      .: disabled
+
+  openembedded-core:
+    url: "https://git.openembedded.org/openembedded-core"
+    branch: blacksail
+    layers:
+      meta:
+
+  meta-openembedded:
+    url: "https://git.openembedded.org/meta-openembedded"
+    branch: blacksail
+    layers:
+      meta-oe:

@@ -34,6 +34,7 @@ do_fix_sysconfdir () {
     sed -e 's|/etc/ssl/certs/java|${sysconfdir}/ssl/certs/java|g' \
         -i ${S}/src/main/java/org/debian/security/UpdateCertificates.java
 }
+do_fix_sysconfdir[doc] = "Replace the hardcoded /etc/ssl/certs/java path with ${sysconfdir}/ssl/certs/java"
 
 do_compile () {
     install -d build # simplify in-tree builds (externalsrc)
@@ -57,10 +58,13 @@ do_install () {
 
     install -d ${D}${sysconfdir}/ssl/certs/java
     install -Dm0755 ${UNPACKDIR}/${BPN}.hook.in ${D}${sysconfdir}/ca-certificates/update.d/${BPN}-hook
-    sed -e 's|@@datadir_java@@|${datadir_java}|' \
-        -e 's|@@libdir_jvm@@|${libdir_jvm}|' \
-        -e 's|@@JARFILENAME@@|${JARFILENAME}|' \
-        -i ${D}${sysconfdir}/ca-certificates/update.d/${BPN}-hook
+    sed -i \
+        -e 's#@@BPN@@#${BPN}#g' \
+        -e 's#@@datadir_java@@#${datadir_java}#g' \
+        -e 's#@@JARFILENAME@@#${JARFILENAME}#g' \
+        -e 's#@@libdir_jvm@@#${libdir_jvm}#g' \
+        -e 's#@@sysconfdir@@#${sysconfdir}#g' \
+        ${D}${sysconfdir}/ca-certificates/update.d/${BPN}-hook
 
     install -d -m0755 ${D}${sbindir}
     ln -s ${@os.path.relpath("${sysconfdir}/ca-certificates/update.d/${BPN}-hook", "${sbindir}")} \
@@ -68,23 +72,17 @@ do_install () {
 }
 
 pkg_postinst:${PN} () {
-    if [ -n "$D" ] ; then
-        # In this case we want to use the Java in the image recipe's
-        # native sysroot (native Java, not qemu target Java) to
-        # generate the trustStore.
-        # None of the supported Java versions are in PATH, though, so
-        # we have to find a satisfactory one ourselves below ${libdir_jvm}.
-        # We really need the ${NATIVE_ROOT} variable for that to work,
-        # as STAGING_LIBDIR_JVM_NATIVE resolves to this recipe's native
-        # sysroot during recipe build time, so it's of no use during
-        # image build time.
-        if [ -z ${NATIVE_ROOT} ] ; then
-            echo "${0}: NATIVE_ROOT not known"
-            false
+    if [ -n "$D" ]; then
+        # During the image build, generate the trustStore with the native
+        # java from the image recipe's native sysroot. NATIVE_ROOT is needed
+        # because STAGING_DIR_NATIVE points at this recipe's sysroot.
+        if [ -z "${NATIVE_ROOT}" ]; then
+            echo "$0: NATIVE_ROOT not known" >&2
+            exit 1
         fi
-        JVM_LIBDIR=${NATIVE_ROOT}${libdir_jvm}
+        export JVM_LIBDIR="${NATIVE_ROOT}${libdir_native}/jvm"
     fi
-    JVM_LIBDIR=${JVM_LIBDIR} $D${sbindir}/create-ca-certificates-java
+    $D${sbindir}/create-ca-certificates-java
 }
 
 FILES:${PN} += "${datadir_java}"

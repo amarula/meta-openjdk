@@ -1,0 +1,15 @@
+# Sample image with a full OpenJDK, including javac.
+#
+#   kas build kas/jdk.yml
+#   kas build kas/jdk.yml:kas/openjdk-25.yml
+#   kas build kas/jdk.yml:kas/openjdk-25.yml:kas/testimage.yml
+header:
+  version: 23
+  includes:
+    - kas/meta-openjdk.yml
+
+target: openjdk-test-image
+
+local_conf_header:
+  openjdk-variant: |
+    BUILD_FULL_JDK = "true"

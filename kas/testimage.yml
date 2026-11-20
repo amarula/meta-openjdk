@@ -1,0 +1,18 @@
+# Boot the image in qemu after it is built and run the OpenJDK runtime
+# tests and the ptests. Combine with jdk.yml or jre.yml, e.g.
+#   kas build kas/jdk.yml:kas/openjdk-25.yml:kas/testimage.yml
+#
+# Use kas-container --kvm, or pass /dev/kvm otherwise, for usable speed.
+header:
+  version: 23
+
+local_conf_header:
+  testimage: |
+    DISTRO_FEATURES:append = " ptest"
+    IMAGE_CLASSES += "testimage"
+    TESTIMAGE_AUTO = "1"
+    TEST_RUNQEMUPARAMS = "slirp"
+    QB_MEM = "-m 2048"
+    # testimage logs in as root over ssh; same as the oe-core fragment
+    # core/yocto/root-login-with-empty-password. Never ship this.
+    EXTRA_IMAGE_FEATURES += "allow-empty-password empty-root-password allow-root-login"
