@@ -18,11 +18,14 @@ LIC_FILES_CHKSUM = "\
 
 S = "${WORKDIR}/git"
 
-inherit jar maven maven_update_deps
+inherit jar maven maven_update_deps maven_ptest
 
 SRC_URI = "git://github.com/mwiede/jsch;protocol=https;branch=master"
 SRCREV = "36c4d26a58ee06b100a9f0f3509320168be4c43a"
 require ${BPN}-deps.inc
+
+# The maven-enforcer-plugin rule in pom.xml requires JDK 25 or newer.
+OPENJDK_MIN_VERSION = "25"
 
 do_install() {
      oe_jarinstall ${S}/target/${BPN}-${PV}.jar ${BPN}.jar

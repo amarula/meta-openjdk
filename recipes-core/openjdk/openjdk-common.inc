@@ -22,6 +22,7 @@ OPENJDK_CONF_ENV = "\
 
 # This must be passed to configure.
 OPENJDK_JOBS := "${@oe.utils.parallel_make(d) or 1}"
+OPENJDK_JOBS[vardepvalue] = "1"
 PARALLEL_MAKE = ""
 
 OPENJDK_INSTALL_BASE = "${libdir}/jvm"
@@ -153,6 +154,11 @@ FILES:${PN} += "\
 
 FILES:${PN}-dev += "\
     ${OPENJDK_INSTALL_BASE}/include \
+"
+
+# Only some versions ship man pages in the JDK image.
+FILES:${PN}-doc += "\
+    ${OPENJDK_INSTALL_BASE}/man \
 "
 
 # When 'openjdk-dev' is installed, also install 'openjdk'

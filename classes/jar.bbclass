@@ -6,6 +6,7 @@ inherit openjdk
 # the Debian distribution.
 
 datadir_java ?= "${datadir}/java"
+libdir_jvm ?= "${libdir}/jvm"
 
 oe_jarinstall() {
   # Purpose: Install a jar file and create all the given symlinks to it.

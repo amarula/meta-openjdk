@@ -1,0 +1,16 @@
+{
+    "variables": {
+        "known": [
+            "BUILD_FULL_JDK",
+            "MAVEN_DEPENDENCY_PLUGIN",
+            "OPENJDK_TEST_JDK",
+            "OPENJDK_TEST_VERSION",
+            "libdir_jvm"
+        ]
+    },
+    "oelint-suggestedvar": {
+        "image-excludes": [
+            "CVE_PRODUCT"
+        ]
+    }
+}

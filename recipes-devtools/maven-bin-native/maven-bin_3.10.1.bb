@@ -11,14 +11,14 @@ CVE_PRODUCT = "maven"
 SECTION = "devtools"
 
 LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=00ad6cb370b9de3e45ddef5ea5539ccc"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=dfc679e42f6af0f38970f0a2bd9122d9"
 
 DEPENDS += "\
     openjdk-bin-native \
     rsync-native \
 "
 SRC_URI = "https://dlcdn.apache.org/maven/maven-3/${PV}/binaries/apache-maven-${PV}-bin.tar.gz"
-SRC_URI[sha256sum] = "a46cc51bc74fa23fd267c7a0b9132b146dcf526da60d31aa5174e565632e9e0e"
+SRC_URI[sha256sum] = "810b8348f0a40f9116c202093fae007ebeabf67699bf34d81ee7e272289e085a"
 
 S = "${WORKDIR}/apache-maven-${PV}"
 
