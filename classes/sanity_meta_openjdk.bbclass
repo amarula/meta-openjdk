@@ -15,7 +15,7 @@ java_version_sanity_check[doc] = "\
 python java_toolchain_sanity_check() {
     toolchain=d.getVar("PREFERRED_TOOLCHAIN_TARGET")
     if toolchain != "gcc":
-        bb.fatal(f"Compiling OpenJDK requires a GCC toolchain")
+        bb.fatal("Compiling OpenJDK requires a GCC toolchain")
 }
 addhandler java_toolchain_sanity_check
 java_toolchain_sanity_check[eventmask] = "bb.event.SanityCheck"

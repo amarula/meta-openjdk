@@ -8,56 +8,44 @@
 # and package update in OE, so the distinction between cases 2)
 # and 3) isn't perfect.
 
-self=$(basename $0)
-jvm_libdir="@@libdir_jvm@@"
+self="$(basename "$0")"
+sysroot="${D:-}"
+cacerts="${sysroot}@@sysconfdir@@/ssl/certs/java/cacerts"
+jvm_libdir="${JVM_LIBDIR:-@@libdir_jvm@@}"
+java="${jvm_libdir}/bin/java"
 
-if [ -n "${D:-}" ] ; then
-    # called from postinst as part of image build on host
-    if [ -z "${JVM_LIBDIR:-}" ] ; then
-        # should never happen, this is supposed to be passed in
-        echo "$0: no JVM_LIBDIR specified" >&2
-        false
+if [ -n "${sysroot}" ] && [ -z "${JVM_LIBDIR:-}" ]; then
+    # Called from the postinst during the image build, which must pass in
+    # the native JVM. Running the target java on the host is not possible.
+    echo "$0: no JVM_LIBDIR specified" >&2
+    exit 1
+fi
+
+if [ ! -x "${java}" ]; then
+    # Should not happen, as the package depends on openjdk.
+    echo "$0: ${java} not found" >&2
+    exit 1
+fi
+
+if [ "${self}" != "@@BPN@@-hook" ] && [ -s "${cacerts}" ]; then
+    # Case 3: run directly and the trustStore exists already.
+    exit 0
+fi
+
+list_certificates() {
+    if [ "${self}" = "@@BPN@@-hook" ]; then
+        # Case 1: update-ca-certificates passes the changed files on stdin.
+        cat
+    else
+        # Case 2: run directly and there is no trustStore yet, e.g. during
+        # the image build. Add all certificates.
+        find "${sysroot}@@sysconfdir@@/ssl/certs" -name '*.pem' |
+        while read -r filename; do
+            echo "+${filename}"
+        done
     fi
-fi
-if [ -n "${JVM_LIBDIR:-}" ] ; then
-    jvm_libdir="${JVM_LIBDIR}"
-fi
+}
 
-for JAVA in icedtea7-native/bin/java \
-            openjdk-8-native/bin/java openjdk-8/bin/java openjre-8/bin/java \
-         ; do
-    if [ -x "${jvm_libdir}/${JAVA}" ] ; then
-        JAVA="${jvm_libdir}/${JAVA}"
-        break
-    fi
-done
-
-if [ ! -x "${JAVA}" ] ; then
-    # shouldn't really happen, as we RDEPEND on java
-    echo "$0: JAVA not found" >&2
-    false
-fi
-
-if [ "${self}" = "ca-certificates-java-hook" ] ; then
-    # case 1) from above
-    # the list of (changed) files is passed via stdin
-    while read input ; do
-        echo "${input}"
-    done
-elif [ -s $D${sysconfdir}/ssl/certs/java/cacerts ] ; then
-    # we were executed explicitly (not via ca-cacertificates hook)
-    # case 3) from above
-    # do nothing, as the trustStore exists already
-    return
-else
-    # we were executed explicitly (not via ca-cacertificates hook)
-    # case 2) from above
-    # the trustStore doesn't exist yet, create it as this is
-    # a first time install (e.g. during image build)
-    find $D${sysconfdir}/ssl/certs -name '*.pem' | \
-    while read filename ; do
-        echo "+${filename}"
-    done
-fi | SYSROOT="${D:-}" ${JAVA} -Xmx64m \
-                              -jar ${D:-}@@datadir_java@@/@@JARFILENAME@@ \
-                              -storepass changeit
+list_certificates | SYSROOT="${sysroot}" "${java}" -Xmx64m \
+    -jar "${sysroot}@@datadir_java@@/@@JARFILENAME@@" \
+    -storepass changeit

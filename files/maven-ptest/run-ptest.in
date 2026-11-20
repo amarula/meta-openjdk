@@ -1,0 +1,40 @@
+#!/bin/sh
+# Run the upstream JUnit tests of @@BPN@@ and report them in ptest format.
+
+ptest_dir="$(dirname "$(readlink -f "$0")")"
+
+# Everything goes on the JVM class path instead of --class-path, so tests
+# using ClassLoader.getSystemResource() can find their resources.
+classpath="${ptest_dir}/junit-console.jar:${ptest_dir}/test-classes:@@datadir_java@@/@@BPN@@.jar"
+agent=""
+for jar in "${ptest_dir}"/lib/*.jar; do
+    classpath="${classpath}:${jar}"
+    # Mockito attaches itself to the running JVM through the jdk.attach
+    # module, which a JRE does not have. Loading it as an agent only needs
+    # java.instrument.
+    case "${jar##*/}" in
+        mockito-core-*.jar)
+            agent="-javaagent:${jar}"
+            ;;
+    esac
+done
+
+java ${agent:+"${agent}"} -cp "${classpath}" org.junit.platform.console.ConsoleLauncher execute \
+    --disable-banner \
+    --disable-ansi-colors \
+    --details=testfeed \
+    --scan-class-path "${ptest_dir}/test-classes" \
+    @@JUNIT_CONSOLE_ARGS@@ 2>&1 |
+while read -r line; do
+    case "${line}" in
+        *" :: SUCCESSFUL")
+            echo "PASS: ${line% :: SUCCESSFUL}"
+            ;;
+        *" :: FAILED")
+            echo "FAIL: ${line% :: FAILED}"
+            ;;
+        *" :: ABORTED"* | *" :: SKIPPED"*)
+            echo "SKIP: ${line%% :: *}"
+            ;;
+    esac
+done

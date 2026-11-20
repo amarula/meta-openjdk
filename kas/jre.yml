@@ -1,0 +1,15 @@
+# Sample image with an OpenJDK JRE.
+#
+#   kas build kas/jre.yml
+#   kas build kas/jre.yml:kas/openjdk-25.yml
+#   kas build kas/jre.yml:kas/openjdk-25.yml:kas/testimage.yml
+header:
+  version: 23
+  includes:
+    - kas/meta-openjdk.yml
+
+target: openjre-test-image
+
+local_conf_header:
+  openjdk-variant: |
+    BUILD_FULL_JDK = "false"

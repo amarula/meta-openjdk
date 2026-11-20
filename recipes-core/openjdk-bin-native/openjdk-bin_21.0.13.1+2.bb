@@ -3,4 +3,5 @@ require openjdk-bin.inc
 LIC_FILES_CHKSUM:append = "\
     file://jdk-${PV}/legal/java.prefs/ASSEMBLY_EXCEPTION;md5=d54e5b1b11ce92d8abc22e8e756f54bd \
 "
-SRC_URI[sha256sum] = "30cb129f6cf299c852cec0feca9ea2a596d2ee9f26d8605d3a253951f6c8b20f"
+
+SRC_URI[sha256sum] = "bb8a93f9ae6e7a693b2b721e85dbeff26ae1a77447985a8d7afcdd9c7cf6222e"
