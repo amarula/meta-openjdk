@@ -47,3 +47,4 @@ python do_check_openjdk_version() {
                  f"but OpenJDK {selected} is selected. {hint}")
 }
 do_check_openjdk_version[doc] = "Ensure the selected OpenJDK matches OPENJDK_MIN_VERSION and OPENJDK_SUPPORTED_VERSIONS"
+addtask do_check_openjdk_version before do_fetch
