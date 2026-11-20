@@ -12,4 +12,4 @@ target: openjdk-test-image
 
 local_conf_header:
   openjdk-variant: |
-    BUILD_FULL_JDK = "true"
+    OE_FRAGMENTS += "meta-openjdk/jdk"

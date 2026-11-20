@@ -12,4 +12,4 @@ target: openjre-test-image
 
 local_conf_header:
   openjdk-variant: |
-    BUILD_FULL_JDK = "false"
+    OE_FRAGMENTS += "meta-openjdk/jre"

@@ -49,6 +49,33 @@ version found in recipes-java/openjdk.
 PREFERRED_VERSION_openjdk-bin-native is automatically set by the java_version_sanity_check
 method in classes/sanity_meta_openjdk.bbclass file.
 
+Configuration fragments
+=======
+The layer ships configuration fragments in conf/fragments. Enable them with
+`bitbake-config-build enable-fragment <name>`:
+
+  meta-openjdk/openjdk-17, -21, -25, -27  select the OpenJDK version
+  meta-openjdk/jdk                        build the full JDK (openjdk-test-image)
+  meta-openjdk/jre                        build the JRE (openjre-test-image)
+  meta-openjdk/testimage                  run the runtime tests and ptests in qemu
+                                          after the image is built (testing only)
+
+Setting up a build with bitbake-setup
+=======
+bitbake-setup/configurations contains a bitbake-setup configuration that fetches
+meta-openjdk and its dependencies and asks for the variant, version and machine:
+
+  bitbake-setup init bitbake-setup/configurations/meta-openjdk-wrynose.conf.json
+
+or non-interactively:
+
+  bitbake-setup init --non-interactive \
+      bitbake-setup/configurations/meta-openjdk-wrynose.conf.json \
+      openjdk meta-openjdk/jdk meta-openjdk/openjdk-21 machine/qemux86-64
+
+Then source the printed init-build-env and run `bitbake openjdk-test-image` (or
+`bitbake openjre-test-image` for the JRE).
+
 Maintainers
 =======
 Adam Duskett <adam.duskett@amarulasolutions.com>

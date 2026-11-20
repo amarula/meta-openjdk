@@ -8,11 +8,4 @@ header:
 
 local_conf_header:
   testimage: |
-    DISTRO_FEATURES:append = " ptest"
-    IMAGE_CLASSES += "testimage"
-    TESTIMAGE_AUTO = "1"
-    TEST_RUNQEMUPARAMS = "slirp"
-    QB_MEM = "-m 2048"
-    # testimage logs in as root over ssh; same as the oe-core fragment
-    # core/yocto/root-login-with-empty-password. Never ship this.
-    EXTRA_IMAGE_FEATURES += "allow-empty-password empty-root-password allow-root-login"
+    OE_FRAGMENTS += "meta-openjdk/testimage"

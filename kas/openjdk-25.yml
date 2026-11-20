@@ -5,4 +5,4 @@ header:
 
 local_conf_header:
   openjdk-version: |
-    PREFERRED_VERSION_openjdk = "25%"
+    OE_FRAGMENTS += "meta-openjdk/openjdk-25"
