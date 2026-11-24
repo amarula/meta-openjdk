@@ -18,7 +18,7 @@ DEPENDS += "\
     rsync-native \
 "
 SRC_URI = "https://dlcdn.apache.org/maven/maven-3/${PV}/binaries/apache-maven-${PV}-bin.tar.gz"
-SRC_URI[sha256sum] = "810b8348f0a40f9116c202093fae007ebeabf67699bf34d81ee7e272289e085a"
+SRC_URI[sha256sum] = "8ba13121794243e604dbca50439f6ae649ce602675a167129556fd502947b249"
 
 S = "${WORKDIR}/apache-maven-${PV}"
 
